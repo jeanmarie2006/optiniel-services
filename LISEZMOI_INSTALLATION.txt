@@ -1,0 +1,43 @@
+COMMENT INSTALLER LE VRAI SYSTEME ADMIN (email + mot de passe)
+================================================================
+
+1. Remplace ces fichiers dans ton projet optiniel-services (garde les
+   memes noms/emplacements) :
+
+   .env.local                        -> a la racine du projet
+   package.json                      -> a la racine (remplace l'ancien)
+   pages/admin.js                    -> remplace l'ancien
+   pages/api/admin-list.js           -> remplace l'ancien
+   pages/api/admin-login.js          -> nouveau fichier
+   pages/api/admin-logout.js         -> nouveau fichier
+   lib/session.js                    -> nouveau fichier
+
+2. Dans Supabase (SQL Editor > New query), execute admin_users.sql
+   pour creer la table.
+
+3. Toujours dans le SQL Editor, execute creer_premier_admin.sql pour
+   creer ton premier compte admin.
+   -> Email : sedjamevianney906@gmail.com
+   -> Mot de passe : Optiniel2026!
+   (tu peux changer l'email dans le fichier SQL avant de l'executer
+   si tu preferes un autre email)
+
+4. Dans le terminal VS Code, a la racine du projet :
+   npm install
+   (installe bcryptjs, le nouveau package ajoute)
+
+5. Redemarre le serveur :
+   npm run dev
+
+6. Va sur http://localhost:3000/admin et connecte-toi avec l'email
+   et le mot de passe de l'etape 3.
+
+A retenir :
+- ADMIN_PASSWORD n'est plus utilise, tu peux le supprimer de .env.local
+  si tu veux (il ne fait plus rien).
+- Pour ajouter un autre admin plus tard, il suffit d'inserer une ligne
+  dans admin_users avec un email + un password_hash genere en bcrypt
+  (dis-le moi et je te genere le hash).
+- Avant la mise en ligne (Vercel), ajoute les memes variables
+  d'environnement (SUPABASE_URL, SUPABASE_SERVICE_KEY, SESSION_SECRET)
+  dans Vercel > Settings > Environment Variables.
