@@ -8,14 +8,8 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Méthode non autorisée." });
   }
 
-  // --- MODE DEBUG TEMPORAIRE ---
   if (!isSupabaseConfigured) {
-    return res.status(500).json({
-      error: "DEBUG: Supabase non configuré. SUPABASE_URL présent=" +
-        Boolean(process.env.SUPABASE_URL) +
-        " / SUPABASE_SERVICE_KEY présent=" +
-        Boolean(process.env.SUPABASE_SERVICE_KEY),
-    });
+    return res.status(500).json({ error: "Supabase n'est pas configuré." });
   }
 
   const { email, password } = req.body || {};
@@ -29,18 +23,15 @@ export default async function handler(req, res) {
     .eq("email", email.toLowerCase().trim())
     .single();
 
+  // Message volontairement identique en cas d'email inconnu ou de mauvais
+  // mot de passe, pour ne pas révéler quels emails existent en base.
   if (error || !user) {
-    return res.status(401).json({
-      error: "DEBUG: requête Supabase échouée. Détail: " +
-        (error ? JSON.stringify(error) : "aucun utilisateur trouvé pour cet email"),
-    });
+    return res.status(401).json({ error: "Identifiants incorrects." });
   }
 
   const passwordMatches = await bcrypt.compare(password, user.password_hash);
   if (!passwordMatches) {
-    return res.status(401).json({
-      error: "DEBUG: utilisateur trouvé (" + user.email + ") mais mot de passe ne correspond pas au hash stocké.",
-    });
+    return res.status(401).json({ error: "Identifiants incorrects." });
   }
 
   const token = createSessionToken(user.email);
